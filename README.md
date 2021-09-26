@@ -2,10 +2,14 @@
 
 Here is the simple static site generator, ecrit en procrastination.
 
+Note that this README *isn't* a traditional readme. This is the 👉**ENTIRE SOURCE CODE**👈, exported from a jupyter notebook.
+
 ### Architecture: 
-1. Have a `posts` directory with some text files, in a custom format called "SparkDown"
-2. Parse the SparkDown
-3. Put the output into a `build` folder
+1. Have a `posts` directory with some text files, in a custom format
+2. Parse the custom format (called SparkDown)
+3. Have `invariants` directory with some constant boilerplate
+4. Link to the correct `invariant` templates based on metadata in the SparkDown
+5. Render and put the output into a `build` folder
 
 ### The SparkDown format
 
@@ -25,8 +29,7 @@ For instance, `# Hello world` sets the `mode` to `header` with the `#` sigil.
 
 ```python
 some_text = """
-$ layout: index
-$ left-pad: hurting
+$ template: index
 
 # Hello welcome to [my blog](https://myblog.com)
 
