@@ -1,0 +1,14 @@
+<div>
+::
+post.print(post.content)
+::
+</div>
+
+<ul>
+::
+for p in posts:
+    if p == post:
+        continue
+    post.print(f"<li><a href='{p.title}.html'> {p.title} </a></li>")
+::
+</ul>

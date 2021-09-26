@@ -1,0 +1,8 @@
+<p>
+::
+post.print(post.content)
+::
+</p>
+<footer>
+    <p> <a href="/"><~ back home </a></p>
+</footer>
