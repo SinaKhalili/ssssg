@@ -1,0 +1,145 @@
+# Pointless abstraction
+
+Lately I've been thinking a lot about the way I've been interpreting
+my computing environment. Namely, what is the platform?
+
+In school we learnt that a great leap was made when we realized that
+software could be written in a high level language and ported to
+many other architectures using compilers or interpreters. This move
+had the effect of decoupling the gloriously quick iterating software 
+from the slow moving hardware.
+
+In a sense, software became a platform and the hardware underneath
+became more of an accounting detail.
+
+Now upon a bedrock of software, more software could be built - this
+is the beauty of abstraction: we build on top of layers we don't
+understand. If we can trust the layers below us we can free ourselves
+from worrying about it and focus on "only the parts of our applications
+that are unique". 
+
+This was presented as a Very Good Thing, that we should all be happy
+about. And as a first-year computer science undergraduate, I was
+pretty sold on it.
+
+# Cracks start to show
+
+Since we're so spoiled in our current computing environment and since
+I'd adjusted my expectations to an incredibly low bar, it actually took
+me a little while to find an instance of software running way
+slower than it should be.
+
+I remember I wanted to extract some text content from a pdf file.
+So I searched for a quick program to do this and after a while I found
+a python solution that worked resonably well for a couple of pages. 
+I ran it on an 800 page pdf of a textbook and it took a few minutes
+to transcribe back to a text file. 
+
+Ok, cool, I mean it's 800 pages right? It's a lot of pages. 5 minutes
+seems reasonable. 
+
+But wait... 
+
+It's not that reasonable right? I've seen images open and load instantly
+and those files were sometimes bigger than the pdf... hmmm
+
+So, I searched a little harder and found another tool that does the same
+thing. It had one of those old-school readme text files that just
+renders as monospace text on github. It was written in C++ and hadn't
+been updated in 4 years. 
+
+I fed it the 800 page textbook and it ran instantly. Huh. I guess there's
+something to this compilation business after all.
+
+Now I know it may just be the world's most ice-cold take but at the end
+of the day: compiled languages are faster than interpreted ones. 
+End of story. So if you want performant software, you use a compiled
+language. It's as simple as that.
+
+# Not faster but easier
+
+So I thought, yes compiled languages like C are faster, but they're also
+more difficult to write. Like school says I'm going to leverage
+the work of those before me and "only write the parts that are truly
+unique to my application".
+
+But... what exactly, precisely, is unique? Isn't all of programming
+taking some generic thing and putting it together?
+
+Actually, there are some tasks that are annoying, like opening a socket.
+
+But... is it even that bad? Are you even saving that much code using
+a library?
+
+# The library of babylon
+
+A library for this! Another one for that! 
+What's the point of all these libraries? 
+
+Ok I admit for things like cryptography implementations, I will
+rely on the libraries. But something like opening a file type... do
+I always need a library? 
+
+Sometimes I spend more time learning library's API. Sometimes the library
+is slow. But usually it's not either of these things.
+
+The thing that worries me about using relying on libraries is that
+
+I don't learn anything.
+
+The more you use libraries, the more alienated you become from the thing
+that is actually happening. That thing is
+
+# The hardware strikes back
+
+The true plateform is the hardware. I mean, of course it is. That's where
+the code runs. The physical electrons ripping up and down the chip
+flushing around the CPU, running down the DMA to the accelerators, running
+back. Why do we study random abstractions when we have a perfect
+underlying system to study first? 
+
+# Even worse 
+
+What is the purpose of learning how a particular tool does something?
+In fact, often the focus is on how to use the tool - not even how the
+tool works! This is even worse. 
+
+This is how you use the thing. This tool is faster than y by x%. Why?
+"The best X for devs" why? How? 
+
+I almost feel like we are hiding abstraction like ancient knowledge.
+Like it's beyond hidden - it's guarded. The node_modules are greyed out in
+you editor. The pip install folder is in a secret folder.
+
+All in the name of letting you do "only that which makes your app unique". 
+
+Well congratulations, now I don't know anything but I have a functioning thing
+that nobody wants. 
+
+What's more likely? That the completed version of the thing I make is exactly
+what the people want, or that it's not? 
+
+Or put another way, would I rather make the thing and learn nothing (except 
+how to use another tool) or would I rather not complete the thing or learn
+a bunch of things about the way my system works? 
+
+Why is learning how to resize a picture using resize algorithms presented as
+some sort of a bad, waste of time thing? Why is so much coding focussed on
+getting rid of coding... why not appreciate the people before us by implementing
+their algorithms. We may find a way to improve it even.
+
+# The solution
+My solution so far, and I recognize it's not exactly groudbreaking, is to the 
+language that is closest to your machine. For me, that means C (because my
+assembly is horrible). There are abstractions like pointers and malloc and
+variadic arguments. But there isn't this ridiculous culture of hiding away
+the code. Show me the code, and come as you are. 
+
+Also it's fast, but that's just bonus for me.
+
+So next time I hear something to tell me to "focus only the parts that
+make you unique" I'm going to take a peek under the hood. 
+
+No more knowledge gardens passing as conveniences.
+
+
