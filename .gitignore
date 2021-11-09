@@ -2,3 +2,4 @@ env
 .ipynb_checkpoints
 build
 .DS_Store
+posts/.obsidian
