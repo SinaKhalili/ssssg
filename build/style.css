@@ -1,5 +1,40 @@
 body {
-   font-family: monospace;
-   max-width: 500px;
-   margin: 10px;
+    font-size: 21px;
+    max-width: 600px;
+    font-family: "Helvetica", "Arial", sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: white;
+    background-color: black;
+    padding: 5px;
+}
+
+.outbound {
+    text-decoration: underline overline #FF3028;
+}
+
+img {
+    max-width: min(600px, 90vw);
+    display: block;
+    margin: 10px auto 20px;
+}
+
+
+
+.internal:hover {
+    padding: 0px;
+}
+
+.internal::before {
+    content: " { ";
+}
+    
+.internal::after {
+    content: " } ";
 }
