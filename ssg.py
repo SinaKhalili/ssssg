@@ -28,8 +28,10 @@
 # at the beginning of a line. 
 # 
 # For instance, `# Hello world` sets the `mode` to `header` with the `#` sigil.
+# 
+# ### For obsidian support, we will also read .md files
 
-# In[300]:
+# In[53]:
 
 
 some_text = """
@@ -37,7 +39,7 @@ $ template: index
 
 # Hello welcome to [my blog](https://myblog.com)
 
-Welcome to my cool blog! 
+Welcome to my cool blog! It can even link
 
 I wrote it in my own [markup format](https://google.com) it's not [very good](https://something.com)! but it's a start!
 """
@@ -45,7 +47,7 @@ I wrote it in my own [markup format](https://google.com) it's not [very good](ht
 
 # ### Utils:
 
-# In[272]:
+# In[124]:
 
 
 def eat(text):
@@ -59,6 +61,18 @@ def eat(text):
     except IndexError:
         pass
     return text
+
+def replace_spaces_with_underscore(text):
+    """
+    Format a space-delimited file to be underscore delimited
+    """
+    return "_".join(text.split(" "))
+
+def linkify(text):
+    """
+    Turn a title into a link
+    """
+    return replace_spaces_with_underscore(text.replace("?",""))
 
 
 # ### Mode parsers:
@@ -78,17 +92,17 @@ def eat(text):
 # - sigil `$`:`meta` a key:value pair for metadata in the following format:
 #     - `$<SPACE><KEY>:<SPACE><VALUE>`
 
-# In[273]:
+# In[115]:
 
 
-def parse_header(rest, post_so_far):
+def parse_header(rest, post_so_far, level=1):
     """
     Parse a header at the beginning of the line
     
     # Like this
     """
-    curr_line_without_hash = rest[0][1:]
-    header = f"<h1>{parse_line(curr_line_without_hash)}</h1> \n"
+    curr_line_without_hash = rest[0][level:]
+    header = f"<h{level}>{parse_line(curr_line_without_hash)}</h{level}> \n"
     post_so_far += header
     
     return (eat(rest), post_so_far)
@@ -149,7 +163,7 @@ def parse_generic(rest, post_so_far):
 # Much in the same way the main parser parses *text* into *lines*, 
 # the line parser splits the line into *words*, and calls the necessary parse function.
 
-# In[274]:
+# In[159]:
 
 
 def parse_line(line):
@@ -163,8 +177,11 @@ def parse_line(line):
     while(len(rest)):
         curr_word = rest[0]
         mode = curr_word[0] if len(curr_word) else ""
+        mode_peek = curr_word[1] if len(curr_word) > 1 else ""
         
-        if (mode == "["):
+        if (mode + mode_peek == "[["):
+            rest, line_so_far = parse_wikilink(rest, line_so_far)
+        elif (mode == "["):
             rest, line_so_far = parse_link(rest, line_so_far)
         else:
             rest, line_so_far = parse_generic_word(rest, line_so_far)
@@ -186,8 +203,22 @@ def parse_link(rest, line_so_far):
     last_right_paren = link.rfind(")")
     link, after_link = link[1:last_right_paren], link[last_right_paren+1:]
     
-    line_so_far += f"<a href='{link}'>{inner_text}</a>{after_link} "
+    line_so_far += f"<a class='outbound' href='{link}'>{inner_text}</a>{after_link} "
     return (rest, line_so_far) # Here we don't eat the rest, since we ate before
+
+def parse_wikilink(rest, line_so_far):
+    """
+    Parses a wikilink style link (the kind like [[this]] format)
+    """
+    word = ""
+    while(word.find("]") == -1):
+        word += rest.pop(0)
+        word += " "
+        
+    word = word[2:-3]
+    word_link = replace_spaces_with_underscore(word)
+    line_so_far += f"<a class='internal' href='/{linkify(word)}.html'>{word}</a>"
+    return (rest, line_so_far)
 
 def parse_generic_word(rest, line_so_far):
     """
@@ -201,7 +232,7 @@ def parse_generic_word(rest, line_so_far):
 
 # ### Complete parser:
 
-# In[275]:
+# In[160]:
 
 
 def parse_markup(text):
@@ -221,8 +252,11 @@ def parse_markup(text):
     while(len(rest)):
         curr_line = rest[0]
         mode = curr_line[0] if len(curr_line) else ""
-        
-        if (mode == "#"):
+        mode_peek = curr_line[1] if len(curr_line) > 1 else ""
+
+        if   (mode + mode_peek == "##"):
+            rest, post_so_far = parse_header(rest, post_so_far, level=2)
+        elif (mode == "#"):
             rest, post_so_far = parse_header(rest, post_so_far)
         elif (mode == "$"):  # This function is different as we don't change post_so_far
             rest, metadata = parse_meta(rest, metadata)
@@ -234,7 +268,7 @@ def parse_markup(text):
     return post_so_far, metadata
 
 
-# In[277]:
+# In[161]:
 
 
 # test parser
@@ -252,7 +286,7 @@ def parse_markup(text):
 #  - `content`: The content of the post
 #  - `buffer`: An all-purpose buffer, so that the `exec` contexts can put output in
 
-# In[278]:
+# In[162]:
 
 
 class Post():
@@ -269,6 +303,12 @@ class Post():
         self.metadata = metadata
         self.buffer = ""
         
+    def get_formatted_title(self):
+        """
+        Get the formatted title for the link
+        """
+        return replace_spaces_with_underscore(self.title.replace("?",""))
+    
     def print(self, text, end="\n"):
         """
         Puts text content into the buffer
@@ -319,7 +359,7 @@ class Post():
 # </p>
 # ```
 
-# In[285]:
+# In[163]:
 
 
 def render_page(post, posts, template_name="blog"):
@@ -391,21 +431,24 @@ def parse_sdml_generic(rest, post_so_far):
 # 
 # It needs to by of type `sd`
 
-# In[286]:
+# In[164]:
 
 
 import glob
 from pathlib import Path
 
 
-# In[287]:
+# In[165]:
 
 
 def getbasename(path):
     return path.split("/")[-1][:-3]
 
+def format_path_title(title):
+    return replace_spaces_with_underscore(title.replace("?",""))
 
-# In[299]:
+
+# In[176]:
 
 
 if __name__ == "__main__":
@@ -419,9 +462,16 @@ if __name__ == "__main__":
         footer = footerfile.read()
 
     Path("./build").mkdir(parents=True, exist_ok=True)
+    
+    print("Adding style.css file")
+    with open("./invaraints/style.css") as styles:
+        
+        content = styles.read()
+        with open("./build/style.css", "w") as outstyle:
+            outstyle.write(content)
 
     posts = []
-    for path in glob.iglob("./posts/*.sd"):
+    for path in glob.iglob("./posts/*.*d"):
         with open(path) as file:
             post_text = file.read()
             
@@ -432,20 +482,26 @@ if __name__ == "__main__":
             posts.append(post)
             
     for post in posts:
-        template = "blog"
+        template = "blog" 
         if "template" in post.metadata:
             template = post.metadata['template']
             
         page_content = render_page(post, posts, template_name=template)
         post_html = f"{header}{page_content}{footer}"
 
-        build_path = f"./build/{post.title}.html"
+        build_path = f"./build/{format_path_title(post.title)}.html"
         with open(build_path, "w") as outfile:
             outfile.write(post_html)
-            print(f"Built {path} \033[94m => \033[0m {build_path}")
+            print(f"Built {post.title} \033[94m => \033[0m {build_path}")
 
 
 # 
+
+# In[ ]:
+
+
+
+
 
 # In[ ]:
 
