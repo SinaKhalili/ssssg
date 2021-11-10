@@ -9,6 +9,8 @@ many other architectures using compilers or interpreters. This move
 had the effect of decoupling the gloriously quick iterating software 
 from the slow moving hardware.
 
+{wheels.jpg}
+
 In a sense, software became a platform and the hardware underneath
 became more of an accounting detail.
 
