@@ -3,6 +3,22 @@
 post.print(post.content)
 ::
 </p>
+
+::
+if post.backlinks:
+    post.print('<hr />')
+    post.print('<h4 class="backlinks"> The following pages link back to here: </h4>')
+
+    post.print('<ul>')
+    for backlink in post.backlinks:
+        post.print(f"<li><a href='{linkify(backlink)}.html'> {backlink} </a></li>")
+    post.print('</ul>')
+
+    post.print('</p>')
+
+post.print('<hr />')
+
+::
 <footer>
     <p> <a href="/"><~ back home </a></p>
 </footer>

@@ -25,6 +25,10 @@ img {
     margin: 10px auto 20px;
 }
 
+.backlinks {
+    font-family: monospace;
+}
+
 
 
 .internal:hover {
