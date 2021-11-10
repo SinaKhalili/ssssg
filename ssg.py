@@ -39,7 +39,8 @@ $ template: index
 
 # Hello welcome to [my blog](https://myblog.com)
 
-Welcome to my cool blog! It can even link
+Welcome to my cool blog! It can even link. It can do [[internal links]].
+It can even do images like {this.jpg}
 
 I wrote it in my own [markup format](https://google.com) it's not [very good](https://something.com)! but it's a start!
 """
@@ -47,7 +48,7 @@ I wrote it in my own [markup format](https://google.com) it's not [very good](ht
 
 # ### Utils:
 
-# In[124]:
+# In[25]:
 
 
 def eat(text):
@@ -62,17 +63,13 @@ def eat(text):
         pass
     return text
 
-def replace_spaces_with_underscore(text):
-    """
-    Format a space-delimited file to be underscore delimited
-    """
-    return "_".join(text.split(" "))
-
 def linkify(text):
     """
-    Turn a title into a link
+    Turn a title into a link slug
+    
+    ex. "whats going on?" -> "whats_going_on"
     """
-    return replace_spaces_with_underscore(text.replace("?",""))
+    return text.replace(" ", "_").replace("?","")
 
 
 # ### Mode parsers:
@@ -92,7 +89,7 @@ def linkify(text):
 # - sigil `$`:`meta` a key:value pair for metadata in the following format:
 #     - `$<SPACE><KEY>:<SPACE><VALUE>`
 
-# In[115]:
+# In[161]:
 
 
 def parse_header(rest, post_so_far, level=1):
@@ -163,8 +160,36 @@ def parse_generic(rest, post_so_far):
 # Much in the same way the main parser parses *text* into *lines*, 
 # the line parser splits the line into *words*, and calls the necessary parse function.
 
-# In[159]:
+# In[162]:
 
+
+class BacklinkSingleton():
+    """
+    Generic buffer to push backlinks onto.
+    
+    Singletons are dangerous in notebooks! Remember to clear
+    """
+    _title = ""
+    backlinks = {}
+    
+    def __init__(self):
+        return
+    
+    @classmethod
+    def push(cls, data):
+        if (data in cls.backlinks):
+            cls.backlinks[data].add(cls._title)
+        else:
+            cls.backlinks[data] = set([cls._title])
+        
+    @classmethod
+    def set_title(cls, data):
+        cls._title = data
+        
+    @classmethod
+    def clear(cls):
+        cls._title = ""
+        cls.backlinks = {}
 
 def parse_line(line):
     """
@@ -183,6 +208,8 @@ def parse_line(line):
             rest, line_so_far = parse_wikilink(rest, line_so_far)
         elif (mode == "["):
             rest, line_so_far = parse_link(rest, line_so_far)
+        elif (mode == "{"):
+            rest, line_so_far = parse_image(rest, line_so_far)
         else:
             rest, line_so_far = parse_generic_word(rest, line_so_far)
 
@@ -216,8 +243,20 @@ def parse_wikilink(rest, line_so_far):
         word += " "
         
     word = word[2:-3]
-    word_link = replace_spaces_with_underscore(word)
+    BacklinkSingleton.push(word)
     line_so_far += f"<a class='internal' href='/{linkify(word)}.html'>{word}</a>"
+    return (rest, line_so_far)
+
+def parse_image(rest, line_so_far):
+    """
+    Parses an image link in the form {image.jpg} 
+    
+    I think this is a way nicer way than the markdown format
+    """
+    word = rest.pop(0)
+        
+    word = word[1:-1]
+    line_so_far += f"<img class='imagelink' src='/{word}' />"
     return (rest, line_so_far)
 
 def parse_generic_word(rest, line_so_far):
@@ -232,7 +271,7 @@ def parse_generic_word(rest, line_so_far):
 
 # ### Complete parser:
 
-# In[160]:
+# In[163]:
 
 
 def parse_markup(text):
@@ -268,7 +307,7 @@ def parse_markup(text):
     return post_so_far, metadata
 
 
-# In[161]:
+# In[164]:
 
 
 # test parser
@@ -286,7 +325,7 @@ def parse_markup(text):
 #  - `content`: The content of the post
 #  - `buffer`: An all-purpose buffer, so that the `exec` contexts can put output in
 
-# In[162]:
+# In[165]:
 
 
 class Post():
@@ -301,13 +340,15 @@ class Post():
         self.title = title
         self.content = content
         self.metadata = metadata
+        self.backlinks = []
         self.buffer = ""
         
     def get_formatted_title(self):
         """
         Get the formatted title for the link
         """
-        return replace_spaces_with_underscore(self.title.replace("?",""))
+        return linkify(self.title)
+        
     
     def print(self, text, end="\n"):
         """
@@ -359,10 +400,10 @@ class Post():
 # </p>
 # ```
 
-# In[163]:
+# In[166]:
 
 
-def render_page(post, posts, template_name="blog"):
+def render_page(post, posts, template_name="blog", backlinks=None):
     """
     `post`: is the current post
     `posts`: is all the posts
@@ -403,6 +444,7 @@ def parse_sdml_block(rest, post_so_far, post, keep_code=False):
     local_vars = {
         "post": post,
         "posts": posts,
+        "linkify": linkify,
     }
     
     exec(code, None, local_vars)
@@ -431,14 +473,14 @@ def parse_sdml_generic(rest, post_so_far):
 # 
 # It needs to by of type `sd`
 
-# In[164]:
+# In[167]:
 
 
 import glob
 from pathlib import Path
 
 
-# In[165]:
+# In[168]:
 
 
 def getbasename(path):
@@ -448,7 +490,7 @@ def format_path_title(title):
     return replace_spaces_with_underscore(title.replace("?",""))
 
 
-# In[176]:
+# In[173]:
 
 
 if __name__ == "__main__":
@@ -469,30 +511,47 @@ if __name__ == "__main__":
         content = styles.read()
         with open("./build/style.css", "w") as outstyle:
             outstyle.write(content)
+            
+    print("Adding assets")
+    for path in glob.iglob("./assets/*"):
+        with open(path, "rb") as file:
+            
+            content = file.read()
+            path_end = path.split("/")[-1]
+            with open(f"./build/{path_end}", "wb") as new_file:
+                new_file.write(content)
+        print(f"{path} added")
 
     posts = []
+    link_graph = {}
     for path in glob.iglob("./posts/*.*d"):
         with open(path) as file:
             post_text = file.read()
-            
-            content, metadata = parse_markup(post_text)
             title = getbasename(path)
+            
+            BacklinkSingleton.set_title(title)
+            content, metadata = parse_markup(post_text)
             
             post = Post(title, content, metadata)
             posts.append(post)
-            
+    
     for post in posts:
         template = "blog" 
         if "template" in post.metadata:
             template = post.metadata['template']
             
+        if post.title in BacklinkSingleton.backlinks:
+            post.backlinks = BacklinkSingleton.backlinks[post.title]
+
         page_content = render_page(post, posts, template_name=template)
         post_html = f"{header}{page_content}{footer}"
 
-        build_path = f"./build/{format_path_title(post.title)}.html"
+        build_path = f"./build/{linkify(post.title)}.html"
         with open(build_path, "w") as outfile:
             outfile.write(post_html)
             print(f"Built {post.title} \033[94m => \033[0m {build_path}")
+            
+    BacklinkSingleton.clear()
 
 
 # 
