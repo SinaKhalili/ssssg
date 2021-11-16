@@ -4,11 +4,16 @@ post.print(post.content)
 ::
 </div>
 
+<div id="posts">
 <ul>
 ::
+quote = '"'
+
 for p in posts:
     if p == post:
         continue
-    post.print(f"<li><a href='{p.get_formatted_title()}.html'> {p.title} </a></li>")
+    # post.print(f"<li><a href='{p.get_formatted_title()}.html'> {p.title} </a></li>")
+    post.print(f"<li><a onclick='getPage({quote}{p.get_formatted_title()}.html{quote})' class='internal'>{p.title}</a></li>")
 ::
 </ul>
+</div>

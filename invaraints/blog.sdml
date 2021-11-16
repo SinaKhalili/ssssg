@@ -1,3 +1,13 @@
+<div id="nav"> 
+    <a onclick="getPosts()"> [ posts ] </a>
+    <a href="/"> [ home ] </a>
+    <a onclick="getRandom()"> [ random ] </a>
+</div>
+
+<div class="flex">
+    <div id="root"></div>
+<div id="content">
+<div class="content-class">
 <p>
 ::
 post.print(post.content)
@@ -11,7 +21,8 @@ if post.backlinks:
 
     post.print('<ul>')
     for backlink in post.backlinks:
-        post.print(f"<li><a href='{linkify(backlink)}.html'> {backlink} </a></li>")
+        quote = '"'
+        post.print(f"<li><a onclick='getPage({quote}{linkify(backlink)}.html{quote})' class='internal'>{backlink}</a></li>")
     post.print('</ul>')
 
     post.print('</p>')
@@ -19,6 +30,9 @@ if post.backlinks:
 post.print('<hr />')
 
 ::
+</div>
+</div>
+</div>
 <footer>
     <p> <a href="/"><~ back home </a></p>
 </footer>

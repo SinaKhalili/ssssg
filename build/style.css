@@ -1,6 +1,5 @@
 body {
     font-size: 21px;
-    max-width: 600px;
     font-family: "Helvetica", "Arial", sans-serif;
 }
 
@@ -13,6 +12,7 @@ a:hover {
     color: white;
     background-color: black;
     padding: 5px;
+    cursor: pointer;
 }
 
 .outbound {
@@ -20,7 +20,7 @@ a:hover {
 }
 
 img {
-    max-width: min(600px, 90vw);
+    max-width: min(600px, 75vw);
     display: block;
     margin: 10px auto 20px;
 }
@@ -29,7 +29,9 @@ img {
     font-family: monospace;
 }
 
-
+.flex {
+    display: flex;
+}
 
 .internal:hover {
     padding: 0px;
@@ -41,4 +43,26 @@ img {
     
 .internal::after {
     content: " } ";
+}
+
+.content-class {
+    margin: 0.5em;
+    padding: 1em;
+    border: 5px solid grey;
+    max-width: 33%;
+    min-width: min(650px, 80vw);
+    height: fit-content;
+}
+
+.content-class:hover {
+    border: 5px solid black;
+}
+
+.header {
+    min-width: 20px;
+    position: relative;
+}
+
+.nav {
+    position: absolute;
 }
