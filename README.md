@@ -238,7 +238,8 @@ def parse_wikilink(rest, line_so_far):
         
     word = word[2:-3]
     BacklinkSingleton.push(word)
-    line_so_far += f"<a class='internal' href='/{linkify(word)}.html'>{word}</a>"
+    quote = '"'
+    line_so_far += f"<a onclick='getPage({quote}{linkify(word)}.html{quote})' class='internal'>{word}</a>"
     return (rest, line_so_far)
 
 def parse_image(rest, line_so_far):
@@ -491,13 +492,6 @@ if __name__ == "__main__":
         footer = footerfile.read()
 
     Path("./build").mkdir(parents=True, exist_ok=True)
-    
-    print("Adding style.css file")
-    with open("./invaraints/style.css") as styles:
-        
-        content = styles.read()
-        with open("./build/style.css", "w") as outstyle:
-            outstyle.write(content)
             
     print("Adding assets")
     for path in glob.iglob("./assets/*"):
@@ -542,22 +536,21 @@ if __name__ == "__main__":
 
 ```
 
-    Adding style.css file
     Adding assets
     ./assets/skull.jpg added
     ./assets/vitelloni.jpg added
     ./assets/masculin_feminin.jpg added
+    ./assets/main.js added
+    ./assets/style.css added
     ./assets/wheels.jpg added
-    hi
+    Built another strange one [94m => [0m ./build/another_strange_one.html
     Built pretty cool [94m => [0m ./build/pretty_cool.html
+    Built first post [94m => [0m ./build/first_post.html
+    Built on entrepreneurship [94m => [0m ./build/on_entrepreneurship.html
     Built index [94m => [0m ./build/index.html
-    Built pointless_abstraction [94m => [0m ./build/pointless_abstraction.html
     Built what is going on? [94m => [0m ./build/what_is_going_on.html
-    hi
     Built some random post [94m => [0m ./build/some_random_post.html
-    Built another_strange_one [94m => [0m ./build/another_strange_one.html
-    Built first_post [94m => [0m ./build/first_post.html
-    Built on_entrepreneurship [94m => [0m ./build/on_entrepreneurship.html
+    Built pointless abstraction [94m => [0m ./build/pointless_abstraction.html
 
 
 

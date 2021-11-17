@@ -31,7 +31,7 @@
 # 
 # ### For obsidian support, we will also read .md files
 
-# In[53]:
+# In[2]:
 
 
 some_text = """
@@ -48,7 +48,7 @@ I wrote it in my own [markup format](https://google.com) it's not [very good](ht
 
 # ### Utils:
 
-# In[25]:
+# In[3]:
 
 
 def eat(text):
@@ -89,7 +89,7 @@ def linkify(text):
 # - sigil `$`:`meta` a key:value pair for metadata in the following format:
 #     - `$<SPACE><KEY>:<SPACE><VALUE>`
 
-# In[161]:
+# In[4]:
 
 
 def parse_header(rest, post_so_far, level=1):
@@ -160,7 +160,7 @@ def parse_generic(rest, post_so_far):
 # Much in the same way the main parser parses *text* into *lines*, 
 # the line parser splits the line into *words*, and calls the necessary parse function.
 
-# In[162]:
+# In[92]:
 
 
 class BacklinkSingleton():
@@ -244,7 +244,8 @@ def parse_wikilink(rest, line_so_far):
         
     word = word[2:-3]
     BacklinkSingleton.push(word)
-    line_so_far += f"<a class='internal' href='/{linkify(word)}.html'>{word}</a>"
+    quote = '"'
+    line_so_far += f"<a onclick='getPage({quote}{linkify(word)}.html{quote})' class='internal'>{word}</a>"
     return (rest, line_so_far)
 
 def parse_image(rest, line_so_far):
@@ -271,7 +272,7 @@ def parse_generic_word(rest, line_so_far):
 
 # ### Complete parser:
 
-# In[163]:
+# In[93]:
 
 
 def parse_markup(text):
@@ -307,7 +308,7 @@ def parse_markup(text):
     return post_so_far, metadata
 
 
-# In[164]:
+# In[94]:
 
 
 # test parser
@@ -325,7 +326,7 @@ def parse_markup(text):
 #  - `content`: The content of the post
 #  - `buffer`: An all-purpose buffer, so that the `exec` contexts can put output in
 
-# In[165]:
+# In[95]:
 
 
 class Post():
@@ -400,7 +401,7 @@ class Post():
 # </p>
 # ```
 
-# In[166]:
+# In[96]:
 
 
 def render_page(post, posts, template_name="blog", backlinks=None):
@@ -473,14 +474,14 @@ def parse_sdml_generic(rest, post_so_far):
 # 
 # It needs to by of type `sd`
 
-# In[167]:
+# In[97]:
 
 
 import glob
 from pathlib import Path
 
 
-# In[168]:
+# In[98]:
 
 
 def getbasename(path):
@@ -490,7 +491,7 @@ def format_path_title(title):
     return replace_spaces_with_underscore(title.replace("?",""))
 
 
-# In[173]:
+# In[129]:
 
 
 if __name__ == "__main__":
@@ -504,13 +505,6 @@ if __name__ == "__main__":
         footer = footerfile.read()
 
     Path("./build").mkdir(parents=True, exist_ok=True)
-    
-    print("Adding style.css file")
-    with open("./invaraints/style.css") as styles:
-        
-        content = styles.read()
-        with open("./build/style.css", "w") as outstyle:
-            outstyle.write(content)
             
     print("Adding assets")
     for path in glob.iglob("./assets/*"):
