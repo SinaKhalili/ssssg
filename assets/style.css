@@ -66,3 +66,18 @@ img {
 .nav {
     position: absolute;
 }
+
+.flex-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
+.pulse-animation {
+    animation: color-change 1s;
+}
+
+@keyframes color-change {
+    0% { color: black; }
+    30% { color: blue; }
+    100% { color: black; }
+}

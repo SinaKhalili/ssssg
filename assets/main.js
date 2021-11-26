@@ -1,9 +1,20 @@
 var parser = new DOMParser();
 
+function goToPostOnPage(path) {
+    let elem = document.getElementById(path);
+    elem.classList.add('pulse-animation');
+    elem.scrollIntoView({behavior: "smooth", block: "start", inline: "start"});
+    setTimeout(function(){
+        elem.classList.remove('pulse-animation');
+    }, 1500);
+}
+
 function getPage(path) {
     let root = document.getElementById('root');
     if (root === null) {
         window.location.href = path;
+    } else if (document.getElementById(path) != null) {
+        goToPostOnPage(path)
     } else {
         fetch(path)
           .then(response => response.text())
@@ -14,6 +25,8 @@ function getPage(path) {
 
             let root = document.getElementById('root');
             root.insertAdjacentHTML('afterend', body_str);
+            
+            goToPostOnPage(path)
             window.history.pushState({}, '', path);
         });
     }

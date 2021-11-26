@@ -5,8 +5,13 @@
 </div>
 
 <div class="flex">
-    <div id="root"></div>
-<div id="content">
+<div id="root"></div>
+<div id="content" class="flex-vertical">
+
+::
+post.print(f"<div id='{linkify(post.title)}.html'>")
+::
+
 <div class="content-class">
 <p>
 ::
@@ -28,8 +33,8 @@ if post.backlinks:
     post.print('</p>')
 
 post.print('<hr />')
-
 ::
+</div>
 </div>
 </div>
 </div>

@@ -31,7 +31,7 @@
 # 
 # ### For obsidian support, we will also read .md files
 
-# In[2]:
+# In[1]:
 
 
 some_text = """
@@ -48,7 +48,7 @@ I wrote it in my own [markup format](https://google.com) it's not [very good](ht
 
 # ### Utils:
 
-# In[3]:
+# In[2]:
 
 
 def eat(text):
@@ -89,7 +89,7 @@ def linkify(text):
 # - sigil `$`:`meta` a key:value pair for metadata in the following format:
 #     - `$<SPACE><KEY>:<SPACE><VALUE>`
 
-# In[4]:
+# In[3]:
 
 
 def parse_header(rest, post_so_far, level=1):
@@ -160,7 +160,7 @@ def parse_generic(rest, post_so_far):
 # Much in the same way the main parser parses *text* into *lines*, 
 # the line parser splits the line into *words*, and calls the necessary parse function.
 
-# In[92]:
+# In[4]:
 
 
 class BacklinkSingleton():
@@ -272,7 +272,7 @@ def parse_generic_word(rest, line_so_far):
 
 # ### Complete parser:
 
-# In[93]:
+# In[5]:
 
 
 def parse_markup(text):
@@ -308,7 +308,7 @@ def parse_markup(text):
     return post_so_far, metadata
 
 
-# In[94]:
+# In[6]:
 
 
 # test parser
@@ -326,7 +326,7 @@ def parse_markup(text):
 #  - `content`: The content of the post
 #  - `buffer`: An all-purpose buffer, so that the `exec` contexts can put output in
 
-# In[95]:
+# In[7]:
 
 
 class Post():
@@ -401,7 +401,7 @@ class Post():
 # </p>
 # ```
 
-# In[96]:
+# In[8]:
 
 
 def render_page(post, posts, template_name="blog", backlinks=None):
@@ -474,14 +474,14 @@ def parse_sdml_generic(rest, post_so_far):
 # 
 # It needs to by of type `sd`
 
-# In[97]:
+# In[9]:
 
 
 import glob
 from pathlib import Path
 
 
-# In[98]:
+# In[10]:
 
 
 def getbasename(path):
@@ -491,7 +491,7 @@ def format_path_title(title):
     return replace_spaces_with_underscore(title.replace("?",""))
 
 
-# In[129]:
+# In[11]:
 
 
 if __name__ == "__main__":
